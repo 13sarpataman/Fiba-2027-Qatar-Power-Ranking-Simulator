@@ -1,0 +1,859 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FIBA 2027 World Cup Simulator</title>
+<style>
+:root{--bg:#07111f;--card:#101d31;--card2:#14243b;--text:#eef5ff;--muted:#9eb0c8;--line:#263b58;--accent:#55a7ff;--good:#53d48a;--warn:#ffd166}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07101d,#0b1730);color:var(--text);font-family:Inter,system-ui,sans-serif}header{padding:28px 5vw 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#07101df2;z-index:4}h1{margin:0 0 6px}.sub,.small{color:var(--muted);font-size:13px}nav,.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button,select{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px}button{cursor:pointer}button.active{background:#1d4f85;border-color:var(--accent)}main{max-width:1250px;margin:auto;padding:24px 5vw 60px}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.card{background:#101d31e8;border:1px solid var(--line);border-radius:16px;padding:18px}.stat{font-size:28px;font-weight:750}.muted{color:var(--muted)}table{width:100%;border-collapse:collapse;background:#101d31cc}th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}th{background:#13243a}.top-badge{display:inline-flex;align-items:center;gap:5px;background:#17385e;border:1px solid #2d6fa8;color:#8fc7ff;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;letter-spacing:.05em}.status-row .badge{white-space:nowrap}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#1a304c;font-size:12px}.good{color:var(--good)}.warn{color:var(--warn)}.note{padding:12px 14px;border-left:3px solid var(--accent);background:#0d1a2d;border-radius:8px;margin:14px 0}
+.winnerBtn,.marginBtn{min-width:90px}.winnerBtn.active,.marginBtn.active{background:#1d4f85;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.winnerBtn{font-weight:700}.winnerBtn,.marginBtn{cursor:pointer;pointer-events:auto;position:relative;z-index:5}
+.controls{position:relative;z-index:4}
+button:disabled{opacity:.55;cursor:not-allowed}
+.qualified-row{background:rgba(42,140,88,.16)}.qualified-badge{display:inline-block;margin-left:6px;padding:3px 7px;border-radius:999px;background:rgba(42,140,88,.28);color:#b8ffd0;font-size:11px;font-weight:800}.formula-box{display:grid;gap:10px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#0d1a2d;line-height:1.55}
+.groups-header{margin-bottom:18px}.groups-header h2{margin-bottom:4px}.region-block{margin:0 0 34px}.region-heading{display:flex;align-items:center;padding:16px 20px;margin-bottom:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(90deg,#12233b,#0d1a2d)}.region-heading h2{margin:0 0 4px;font-size:25px}.groups-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.group-card{min-width:0;overflow:hidden}.group-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}.group-title-row h3{margin:0 0 3px}.group-pill{font-size:11px;font-weight:800;letter-spacing:.08em;padding:6px 9px;border-radius:999px;background:#1a2f4d;border:1px solid #2b496c}.group-note{font-size:11px;color:#91a6bf;margin:8px 0 10px}.group-table-wrap{overflow:hidden;border-radius:12px;border:1px solid var(--line)}.group-table{width:100%;table-layout:fixed;border-collapse:collapse}.group-table th,.group-table td{padding:10px 8px}.group-table th:first-child,.group-table td:first-child{width:34px;text-align:center}.group-table th:nth-child(3),.group-table td:nth-child(3),.group-table th:nth-child(4),.group-table td:nth-child(4){width:38px;text-align:center}.group-table th:nth-child(5),.group-table td:nth-child(5){width:64px;text-align:center}.group-table th{font-size:11px;color:#8fa4bd;text-transform:uppercase;letter-spacing:.05em}.group-table td{border-top:1px solid var(--line);vertical-align:middle}.team-cell{overflow-wrap:anywhere}.rank-number{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:50%;background:#142943;font-weight:800}.top3-row{background:rgba(43,105,160,.17)}.top3-row .rank-number{background:#275d8f}.guaranteed-row{background:rgba(42,140,88,.18)}.guaranteed-row .rank-number{background:#267a4d}.qualified-badge{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;background:rgba(42,140,88,.30);color:#baffd0;border:1px solid rgba(80,190,120,.35);font-size:10px;font-weight:800;letter-spacing:.04em}@media(max-width:900px){.groups-grid{grid-template-columns:1fr}.region-heading h2{font-size:22px}}
+.group-table th:nth-child(3),.group-table td:nth-child(3){width:42px;text-align:center}.group-table th:nth-child(4),.group-table td:nth-child(4),.group-table th:nth-child(5),.group-table td:nth-child(5){width:36px;text-align:center}.group-table th:nth-child(6),.group-table td:nth-child(6){width:48px;text-align:center}.group-table th:nth-child(7),.group-table td:nth-child(7){width:78px;text-align:center}.host-badge{display:inline-block;padding:3px 7px;border-radius:999px;background:#725b1d;color:#ffe9a5;border:1px solid #9b7e2d;font-size:10px;font-weight:800}.scenario-list{display:grid;gap:8px;margin-top:10px}.scenario-item{padding:10px 12px;border:1px solid var(--line);background:#0d1a2d;border-radius:10px}.scenario-item b{font-size:13px}.scenario-item .small{margin-top:3px}.movement-up{color:var(--good);font-weight:800}.movement-down{color:var(--warn);font-weight:800}.movement-flat{color:var(--muted);font-weight:800}.ai-note{padding:10px 12px;border:1px solid #2d6fa8;background:#0e2741;border-radius:10px;color:#b9dcff;font-size:12px}.impact{margin-top:9px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#0b1728;font-size:12px}.danger-badge{display:inline-block;padding:3px 7px;border-radius:999px;background:rgba(180,70,70,.22);color:#ffc2c2;border:1px solid rgba(220,100,100,.3);font-size:10px;font-weight:800}.group-footer{display:flex;gap:14px;font-size:11px;color:#91a6bf;margin-top:10px}
+.tiebreak-panel{margin-top:12px;padding:14px;border:1px solid #8b6d23;border-radius:12px;background:linear-gradient(180deg,#211b0e,#15120c)}
+.tiebreak-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.tiebreak-head b{color:#ffe49a}
+.tiebreak-row{display:grid;grid-template-columns:minmax(0,1fr) 72px 18px 72px auto;gap:7px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,209,102,.16)}
+.tiebreak-row input{width:100%;padding:8px 6px;border-radius:8px;border:1px solid #6d5a29;background:#0b1422;color:var(--text);text-align:center;font-weight:800}
+.tiebreak-row input:focus{outline:1px solid var(--warn);border-color:var(--warn)}
+.tiebreak-score-badge{font-size:11px;color:#ffdca0;white-space:nowrap}
+.tiebreak-pending{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(180,140,40,.22);border:1px solid rgba(255,209,102,.35);color:#ffe49a;font-size:10px;font-weight:800}
+.tiebreak-ready{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(42,140,88,.2);border:1px solid rgba(80,190,120,.35);color:#baffd0;font-size:10px;font-weight:800}
+.tiebreak-help{font-size:11px;color:#b8a987;line-height:1.45}
+.selected-winner{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:rgba(34,121,193,.16);border:1px solid rgba(76,158,228,.38);color:#cfe9ff;font-size:11px;font-weight:800;white-space:nowrap}
+.ai-game-btn{border:1px solid rgba(173,130,255,.42);background:rgba(103,68,180,.16);color:#e7dbff}
+.ai-game-btn:hover{background:rgba(103,68,180,.26)}
+.played-score{font-weight:850;color:#eef7ff}
+.winner-pill{padding:4px 8px;border-radius:999px;background:rgba(40,156,91,.16);border:1px solid rgba(72,190,117,.34);color:#bbffd1;font-weight:800;white-space:nowrap}
+.persist-note{font-size:11px;color:#91a6bf;margin-top:8px}
+.tiebreak-game-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid rgba(255,209,102,.16)}
+.ai-summary{padding:10px 12px;border-radius:10px;background:rgba(126,93,190,.11);border:1px solid rgba(160,127,225,.23);color:#d7c9f7;font-size:11px;margin-top:10px}.tiebreak-hide-btn{border:1px solid rgba(255,209,102,.38);background:rgba(255,209,102,.08);color:#ffe4a4;padding:7px 10px;border-radius:9px;font-weight:800;font-size:11px;cursor:pointer}.tiebreak-hide-btn:hover{background:rgba(255,209,102,.15)}.tiebreak-hidden{margin-top:12px;padding:11px 13px;border:1px dashed rgba(255,209,102,.3);border-radius:11px;background:rgba(35,27,11,.55);display:flex;justify-content:space-between;align-items:center;gap:10px}.tiebreak-hidden .small{color:#b9a983}
+@media(max-width:650px){.selected-winner{margin-top:6px}.tiebreak-game-row{grid-template-columns:1fr auto auto}}
+
+@media(max-width:650px){.tiebreak-row{grid-template-columns:minmax(0,1fr) 58px 12px 58px}.tiebreak-row .tiebreak-score-badge{grid-column:1/-1}}
+
+.hero{display:flex;justify-content:space-between;align-items:center;padding:28px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 85% 20%,#193a62,#0d1a2d 55%);margin-bottom:16px}
+.hero h2{font-size:32px;margin:6px 0}.hero p{color:var(--muted);margin:0}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;color:#6bb4ff}.hero-ball{font-size:72px}.dashboard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}.section-head h3{margin:0 0 3px}.jump{font-size:12px;padding:7px 10px}.status-row,.mini-row,.wc-team{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);border-radius:8px}.mini-row{grid-template-columns:35px minmax(0,1fr) 65px 60px}.status-row strong{font-size:11px}.dashboard-links{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.wc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.wc-team{grid-template-columns:1fr auto}.wc-contenders{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}@media(max-width:850px){.dashboard-grid,.wc-grid{grid-template-columns:1fr}.hero-ball{font-size:48px}}
+
+.pots-header{margin-bottom:18px}.pots-header h2{margin:0 0 4px}.pots-note{padding:12px 14px;border-left:3px solid var(--warn);background:#201a0b;border-radius:8px;margin:12px 0;color:#ead89f;font-size:12px;line-height:1.5}.pots-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.draw-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
+.draw-card{background:#101d31e8;border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.draw-card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.draw-card-head h3{margin:0;font-size:18px}
+.draw-slot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 8px;border-top:1px solid var(--line)}
+.draw-slot:first-of-type{border-top:0}
+.draw-slot .small{font-size:10px}
+.draw-team{min-width:0}.draw-team b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.draw-pot-badge{font-size:10px;font-weight:850;padding:4px 7px;border-radius:999px;background:#17385e;color:#a8d5ff;border:1px solid #285f91;white-space:nowrap}
+.draw-empty{padding:10px 8px;color:var(--muted);border-top:1px solid var(--line)}
+.draw-controls{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 8px}
+.draw-controls .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+@media(max-width:1050px){.pots-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.pots-grid,.draw-grid{grid-template-columns:1fr}}.pot-card{background:#101d31e8;border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.pot-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.pot-head h3{margin:0;font-size:18px}.pot-slot{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 8px;border-top:1px solid var(--line)}.pot-slot:first-of-type{border-top:0}.pot-rank{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#17385e;color:#a8d5ff;font-weight:900;font-size:12px}.pot-team b{font-size:13px}.pot-team .small{margin-top:2px}.pot-rating{font-weight:850;white-space:nowrap}.pot-empty{padding:12px 8px;color:#8094ad;font-size:12px;border:1px dashed var(--line);border-radius:10px;margin-top:8px}.pot-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.pot-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#162a45;border:1px solid #294867;font-size:11px;color:#b7cae2}@media(max-width:900px){.pots-grid{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>🏀 FIBA World Cup 2027 Simulator</h1><div class="sub">80 qualifier teams · 4 regions · official Sep 1, 2026 FIBA base ratings</div><nav><button class="tab active" data-v="home">🏠 Dashboard</button><button class="tab" data-v="rank">🌍 World Ranking</button><button class="tab" data-v="sim">🎯 Match Simulator</button><button class="tab" data-v="groups">🏆 Groups</button><button class="tab" data-v="wc">🏆 World Cup 32</button><button class="tab" data-v="pots">🪣 Pots & Draw</button><button class="tab" data-v="teams">🌐 All Teams</button><button class="tab" data-v="formula">🧮 Formula</button></nav></header>
+<main>
+<section id="home" class="view active"><div id="dashboard"></div></section>
+<section id="rank" class="view"><div class="grid"><div class="card"><div class="small">QUALIFIER TEAMS</div><div class="stat">80</div></div><div class="card"><div class="small">REGIONS</div><div class="stat">4</div></div><div class="card"><div class="small">BASE DATE</div><div class="stat">1 Sep 2026</div></div></div><div class="note">Change any result in the simulator. The ranking engine updates sequentially from each team's pre-game simulated rating.</div><div class="controls"><select id="rf"><option>All</option><option>Europe</option><option>Americas</option><option>Asia/Oceania</option><option>Africa</option></select><button id="reset">Reset</button></div><table><thead><tr><th>#</th><th>Team</th><th>Region</th><th>Base</th><th>Simulated</th><th>Δ</th><th>Movement</th></tr></thead><tbody id="rankbody"></tbody></table></section>
+<section id="sim" class="view">
+<div class="card">
+  <h2>🎯 Match Simulator</h2>
+  <div class="small">Select a round. All regions and every match in that round are shown below. First choose the winner, then choose the margin.</div>
+  <div class="controls" style="margin-top:14px">
+    <label>Round <select id="roundSelect"></select></label>
+    <button id="clearRound" type="button">Clear this round</button>
+    <button id="aiSim" type="button">🤖 AI Simulate Unplayed</button>
+  </div>
+</div>
+<div id="roundSummary" class="grid" style="margin-top:14px"></div><div id="aiNote" class="ai-note" style="margin-top:14px">🤖 AI Quick Simulate uses current simulated ratings, a home-court adjustment and a randomized margin model. It fills only unplayed games.</div>
+<div id="matchList" style="margin-top:14px"></div>
+<div class="card" style="margin-top:14px">
+  <h3>Simulation log</h3>
+  <div id="log" class="small">No simulated results.</div>
+</div>
+</section>
+<section id="groups" class="view"><div class="groups-header"><h2>🏆 Second-Round Groups</h2><div class="small">Live standings from your simulated results · exact scores only when an H2H tie needs point difference</div></div><div id="gg"></div></section>
+<section id="wc" class="view"><div id="worldCup"></div></section>
+<section id="pots" class="view"><div id="worldCupPots"></div></section>
+<section id="teams" class="view"><div class="controls"><select id="tf"><option>All</option><option>Europe</option><option>Americas</option><option>Asia/Oceania</option><option>Africa</option></select></div><div class="grid" id="tg"></div></section>
+<section id="formula" class="view"><h2>🧮 FIBA Ranking Points Formula</h2><div class="card"><div class="formula-box"><div><b>Loser:</b> G = 10 × Region Factor × Stage Factor</div><div><b>Winner:</b> GW = G × 1.25 × Opponent Factor × Away Factor × Margin Factor</div><div><b>Opponent Factor:</b> 1 + (opponent's pre-game rating × 0.0001)</div><div><b>Away Factor:</b> Home = 1.00 · Away = 1.10</div><div><b>Margin Factor:</b> &lt;15 = 1.00 · 15–29 = 1.05 · 30&lt; = 1.20</div><div><b>Stage Factor:</b> World Cup Qualifier second round = 1.20</div><div><b>Region Factor:</b> Europe = 1.00 · Americas = 0.93 · Asia/Oceania = 0.68 · Africa = 0.69</div></div><p class="small" style="margin-top:12px">Every game is calculated sequentially: the opponent's rating is the rating immediately before that game.</p></div></section></main>
+<script>
+const D={"teams": [{"name": "Austria", "region": "Europe", "rating": 234.5}, {"name": "Bosnia and Herzegovina", "region": "Europe", "rating": 465.7}, {"name": "Croatia", "region": "Europe", "rating": 465.1}, {"name": "Cyprus", "region": "Europe", "rating": 212.4}, {"name": "Czechia", "region": "Europe", "rating": 531.0}, {"name": "Denmark", "region": "Europe", "rating": 259.4}, {"name": "Estonia", "region": "Europe", "rating": 410.3}, {"name": "Finland", "region": "Europe", "rating": 706.0}, {"name": "France", "region": "Europe", "rating": 870.9}, {"name": "Georgia", "region": "Europe", "rating": 614.7}, {"name": "Germany", "region": "Europe", "rating": 877.4}, {"name": "Great Britain", "region": "Europe", "rating": 351.3}, {"name": "Greece", "region": "Europe", "rating": 784.4}, {"name": "Hungary", "region": "Europe", "rating": 361.8}, {"name": "Iceland", "region": "Europe", "rating": 366.7}, {"name": "Israel", "region": "Europe", "rating": 471.9}, {"name": "Italy", "region": "Europe", "rating": 745.4}, {"name": "Latvia", "region": "Europe", "rating": 787.9}, {"name": "Lithuania", "region": "Europe", "rating": 801.3}, {"name": "Montenegro", "region": "Europe", "rating": 671.2}, {"name": "Netherlands", "region": "Europe", "rating": 322.7}, {"name": "Poland", "region": "Europe", "rating": 651.2}, {"name": "Portugal", "region": "Europe", "rating": 372.1}, {"name": "Romania", "region": "Europe", "rating": 253.0}, {"name": "Serbia", "region": "Europe", "rating": 870.6}, {"name": "Slovenia", "region": "Europe", "rating": 756.3}, {"name": "Spain", "region": "Europe", "rating": 822.1}, {"name": "Sweden", "region": "Europe", "rating": 405.5}, {"name": "Türkiye", "region": "Europe", "rating": 808.1}, {"name": "Ukraine", "region": "Europe", "rating": 410.6}, {"name": "Belgium", "region": "Europe", "rating": 412.0}, {"name": "Switzerland", "region": "Europe", "rating": 251.0}, {"name": "Argentina", "region": "Americas", "rating": 809.2}, {"name": "Bahamas", "region": "Americas", "rating": 343.0}, {"name": "Brazil", "region": "Americas", "rating": 799.0}, {"name": "Canada", "region": "Americas", "rating": 863.0}, {"name": "Chile", "region": "Americas", "rating": 270.7}, {"name": "Colombia", "region": "Americas", "rating": 316.0}, {"name": "Cuba", "region": "Americas", "rating": 210.9}, {"name": "Dominican Republic", "region": "Americas", "rating": 605.2}, {"name": "Jamaica", "region": "Americas", "rating": 157.7}, {"name": "Mexico", "region": "Americas", "rating": 478.6}, {"name": "Nicaragua", "region": "Americas", "rating": 185.6}, {"name": "Panama", "region": "Americas", "rating": 290.4}, {"name": "Puerto Rico", "region": "Americas", "rating": 698.8}, {"name": "Uruguay", "region": "Americas", "rating": 372.2}, {"name": "United States", "region": "Americas", "rating": 952.3}, {"name": "Venezuela", "region": "Americas", "rating": 455.0}, {"name": "Australia", "region": "Asia/Oceania", "rating": 822.0}, {"name": "China", "region": "Asia/Oceania", "rating": 469.1}, {"name": "Chinese Taipei", "region": "Asia/Oceania", "rating": 210.0}, {"name": "Guam", "region": "Asia/Oceania", "rating": 160.2}, {"name": "India", "region": "Asia/Oceania", "rating": 170.8}, {"name": "Iran", "region": "Asia/Oceania", "rating": 472.0}, {"name": "Iraq", "region": "Asia/Oceania", "rating": 149.5}, {"name": "Japan", "region": "Asia/Oceania", "rating": 550.7}, {"name": "Jordan", "region": "Asia/Oceania", "rating": 387.1}, {"name": "Korea", "region": "Asia/Oceania", "rating": 282.7}, {"name": "Lebanon", "region": "Asia/Oceania", "rating": 461.8}, {"name": "New Zealand", "region": "Asia/Oceania", "rating": 515.2}, {"name": "Philippines", "region": "Asia/Oceania", "rating": 397.3}, {"name": "Qatar", "region": "Asia/Oceania", "rating": 185.7}, {"name": "Saudi Arabia", "region": "Asia/Oceania", "rating": 244.7}, {"name": "Syria", "region": "Asia/Oceania", "rating": 200.1}, {"name": "Angola", "region": "Africa", "rating": 473.9}, {"name": "Cameroon", "region": "Africa", "rating": 292.4}, {"name": "Cape Verde", "region": "Africa", "rating": 330.1}, {"name": "Côte d'Ivoire", "region": "Africa", "rating": 413.8}, {"name": "Congo DR", "region": "Africa", "rating": 214.5}, {"name": "Egypt", "region": "Africa", "rating": 373.6}, {"name": "Guinea", "region": "Africa", "rating": 223.9}, {"name": "Libya", "region": "Africa", "rating": 133.2}, {"name": "Madagascar", "region": "Africa", "rating": 126.8}, {"name": "Mali", "region": "Africa", "rating": 259.2}, {"name": "Nigeria", "region": "Africa", "rating": 325.8}, {"name": "Rwanda", "region": "Africa", "rating": 148.1}, {"name": "Senegal", "region": "Africa", "rating": 353.4}, {"name": "South Sudan", "region": "Africa", "rating": 530.4}, {"name": "Tunisia", "region": "Africa", "rating": 330.3}, {"name": "Uganda", "region": "Africa", "rating": 154.8}], "groups": {"Europe I": ["Spain", "Ukraine", "Montenegro", "Portugal", "Greece", "Georgia"], "Europe J": ["Türkiye", "Italy", "Serbia", "Lithuania", "Iceland", "Bosnia and Herzegovina"], "Europe K": ["Poland", "Croatia", "Germany", "Latvia", "Netherlands", "Israel"], "Europe L": ["Finland", "France", "Hungary", "Estonia", "Sweden", "Slovenia"], "Americas E": ["Brazil", "United States", "Colombia", "Dominican Republic", "Chile", "Mexico"], "Americas F": ["Canada", "Puerto Rico", "Argentina", "Uruguay", "Bahamas", "Panama"], "Asia/Oceania E": ["Australia", "New Zealand", "Iran", "Jordan", "Philippines", "Syria"], "Asia/Oceania F": ["Japan", "Lebanon", "China", "Korea", "Qatar", "Saudi Arabia"], "Africa E": ["Cameroon", "Nigeria", "Guinea", "South Sudan", "Cape Verde", "Tunisia"], "Africa F": ["Senegal", "Egypt", "Côte d'Ivoire", "Mali", "Congo DR", "Angola"]}};
+// Locked exact scores for already played European games. They are shown automatically in tiebreaks.
+const historicalScores=[
+ {g:"Europe I",h:"Ukraine",a:"Spain",hs:66,as:86},{g:"Europe I",h:"Spain",a:"Ukraine",hs:78,as:64},
+ {g:"Europe I",h:"Ukraine",a:"Georgia",hs:95,as:76},{g:"Europe I",h:"Georgia",a:"Ukraine",hs:79,as:92},
+ {g:"Europe I",h:"Georgia",a:"Spain",hs:91,as:89},{g:"Europe I",h:"Spain",a:"Georgia",hs:90,as:61},
+ {g:"Europe I",h:"Greece",a:"Montenegro",hs:65,as:67},{g:"Europe I",h:"Montenegro",a:"Greece",hs:65,as:79},
+ {g:"Europe I",h:"Greece",a:"Portugal",hs:56,as:71},{g:"Europe I",h:"Portugal",a:"Greece",hs:68,as:76},
+ {g:"Europe I",h:"Montenegro",a:"Portugal",hs:62,as:83},{g:"Europe I",h:"Portugal",a:"Montenegro",hs:68,as:72},
+ {g:"Europe J",h:"Serbia",a:"Türkiye",hs:78,as:82},{g:"Europe J",h:"Türkiye",a:"Serbia",hs:94,as:86},
+ {g:"Europe J",h:"Bosnia and Herzegovina",a:"Türkiye",hs:75,as:82},{g:"Europe J",h:"Türkiye",a:"Bosnia and Herzegovina",hs:93,as:71},
+ {g:"Europe J",h:"Bosnia and Herzegovina",a:"Serbia",hs:72,as:74},{g:"Europe J",h:"Serbia",a:"Bosnia and Herzegovina",hs:94,as:81},
+ {g:"Europe J",h:"Lithuania",a:"Italy",hs:81,as:82},{g:"Europe J",h:"Italy",a:"Lithuania",hs:87,as:84},
+ {g:"Europe J",h:"Iceland",a:"Italy",hs:83,as:102},{g:"Europe J",h:"Italy",a:"Iceland",hs:76,as:81},
+ {g:"Europe J",h:"Lithuania",a:"Iceland",hs:99,as:82},{g:"Europe J",h:"Iceland",a:"Lithuania",hs:86,as:85},
+ {g:"Europe K",h:"Croatia",a:"Germany",hs:93,as:88},{g:"Europe K",h:"Germany",a:"Croatia",hs:91,as:89},
+ {g:"Europe K",h:"Israel",a:"Croatia",hs:71,as:85},{g:"Europe K",h:"Croatia",a:"Israel",hs:103,as:75},
+ {g:"Europe K",h:"Germany",a:"Israel",hs:89,as:69},{g:"Europe K",h:"Israel",a:"Germany",hs:86,as:92},
+ {g:"Europe K",h:"Netherlands",a:"Poland",hs:83,as:85},{g:"Europe K",h:"Poland",a:"Netherlands",hs:92,as:84},
+ {g:"Europe K",h:"Latvia",a:"Poland",hs:82,as:84},{g:"Europe K",h:"Poland",a:"Latvia",hs:92,as:72},
+ {g:"Europe K",h:"Latvia",a:"Netherlands",hs:78,as:86},{g:"Europe K",h:"Netherlands",a:"Latvia",hs:69,as:72},
+ {g:"Europe L",h:"Finland",a:"France",hs:83,as:76},{g:"Europe L",h:"France",a:"Finland",hs:98,as:69},
+ {g:"Europe L",h:"Hungary",a:"France",hs:71,as:74},{g:"Europe L",h:"France",a:"Hungary",hs:98,as:79},
+ {g:"Europe L",h:"Finland",a:"Hungary",hs:85,as:77},{g:"Europe L",h:"Hungary",a:"Finland",hs:85,as:82},
+ {g:"Europe L",h:"Slovenia",a:"Estonia",hs:93,as:94},{g:"Europe L",h:"Estonia",a:"Slovenia",hs:93,as:62},
+ {g:"Europe L",h:"Sweden",a:"Slovenia",hs:83,as:94},{g:"Europe L",h:"Slovenia",a:"Sweden",hs:79,as:88},
+ {g:"Europe L",h:"Sweden",a:"Estonia",hs:77,as:88},{g:"Europe L",h:"Estonia",a:"Sweden",hs:69,as:79},
+ {g:"Europe I",h:"Spain",a:"Portugal",hs:89,as:95},{g:"Europe I",h:"Greece",a:"Spain",hs:108,as:106},
+ {g:"Europe I",h:"Georgia",a:"Montenegro",hs:101,as:74},{g:"Europe I",h:"Portugal",a:"Georgia",hs:90,as:98},
+ {g:"Europe I",h:"Montenegro",a:"Ukraine",hs:89,as:98},{g:"Europe I",h:"Ukraine",a:"Greece",hs:82,as:76},
+ {g:"Europe J",h:"Türkiye",a:"Lithuania",hs:94,as:66},{g:"Europe J",h:"Serbia",a:"Iceland",hs:102,as:73},
+ {g:"Europe J",h:"Bosnia and Herzegovina",a:"Italy",hs:78,as:76},{g:"Europe J",h:"Italy",a:"Serbia",hs:64,as:76},
+ {g:"Europe J",h:"Lithuania",a:"Bosnia and Herzegovina",hs:78,as:73},{g:"Europe J",h:"Iceland",a:"Türkiye",hs:73,as:110},
+ {g:"Europe K",h:"Croatia",a:"Latvia",hs:115,as:80},{g:"Europe K",h:"Germany",a:"Netherlands",hs:99,as:83},
+ {g:"Europe K",h:"Israel",a:"Poland",hs:86,as:106},{g:"Europe K",h:"Netherlands",a:"Croatia",hs:99,as:101},
+ {g:"Europe K",h:"Poland",a:"Germany",hs:94,as:96},{g:"Europe K",h:"Latvia",a:"Israel",hs:85,as:70},
+ {g:"Europe L",h:"Finland",a:"Sweden",hs:81,as:86},{g:"Europe L",h:"Hungary",a:"Estonia",hs:85,as:67},
+ {g:"Europe L",h:"France",a:"Slovenia",hs:92,as:67},{g:"Europe L",h:"Sweden",a:"France",hs:69,as:84},
+ {g:"Europe L",h:"Estonia",a:"Finland",hs:67,as:96},{g:"Europe L",h:"Slovenia",a:"Hungary",hs:92,as:77}
+];
+const histByGroup={};historicalScores.forEach(x=>{(histByGroup[x.g] ||= []).push(x)});
+function histGames(g){return histByGroup[g]||[]}
+function histH2H(g,teams){const h={};teams.forEach(n=>h[n]={});histGames(g).forEach(x=>{if(!h[x.h]||!h[x.a]||x.hs===x.as)return;const w=x.hs>x.as?x.h:x.a,l=x.hs>x.as?x.a:x.h;h[w][l]=(h[w][l]||0)+1});return h}
+function histPointDiff(g,teams){const d={};teams.forEach(n=>d[n]=0);histGames(g).forEach(x=>{if(d[x.h]===undefined||d[x.a]===undefined)return;d[x.h]+=x.hs-x.as;d[x.a]+=x.as-x.hs});return d}
+
+const state={
+  ratings:Object.fromEntries(D.teams.map(x=>[x.name,x.rating])),
+  results:{},
+  log:[],
+  gameMeta:{},
+  tiebreakScores:{},
+  tiebreakManual:{},
+  tiebreakHidden:{},
+  worldCupDraw:[],
+  worldCupDrawSignature:""
+};
+const STORAGE_KEY="fiba2027_wc_simulator_state_v8";
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({results:state.results,tiebreakScores:state.tiebreakScores,tiebreakManual:state.tiebreakManual,tiebreakHidden:state.tiebreakHidden,worldCupDraw:state.worldCupDraw,worldCupDrawSignature:state.worldCupDrawSignature}))}catch(e){}}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const d=JSON.parse(raw)||{};if(d.results)state.results=d.results;if(d.tiebreakScores)state.tiebreakScores=d.tiebreakScores;if(d.tiebreakManual)state.tiebreakManual=d.tiebreakManual;if(d.tiebreakHidden)state.tiebreakHidden=d.tiebreakHidden;if(Array.isArray(d.worldCupDraw))state.worldCupDraw=d.worldCupDraw;if(d.worldCupDrawSignature)state.worldCupDrawSignature=d.worldCupDrawSignature}catch(e){}}
+
+const teamMap=Object.fromEntries(D.teams.map(x=>[x.name,x]));
+const flags={
+  "Austria":"🇦🇹","Bosnia and Herzegovina":"🇧🇦","Croatia":"🇭🇷","Cyprus":"🇨🇾","Czechia":"🇨🇿","Denmark":"🇩🇰",
+  "Estonia":"🇪🇪","Finland":"🇫🇮","France":"🇫🇷","Georgia":"🇬🇪","Germany":"🇩🇪","Great Britain":"🇬🇧","Greece":"🇬🇷",
+  "Hungary":"🇭🇺","Iceland":"🇮🇸","Israel":"🇮🇱","Italy":"🇮🇹","Latvia":"🇱🇻","Lithuania":"🇱🇹","Montenegro":"🇲🇪",
+  "Netherlands":"🇳🇱","Poland":"🇵🇱","Portugal":"🇵🇹","Romania":"🇷🇴","Serbia":"🇷🇸","Slovenia":"🇸🇮","Spain":"🇪🇸",
+  "Sweden":"🇸🇪","Türkiye":"🇹🇷","Ukraine":"🇺🇦","Belgium":"🇧🇪","Switzerland":"🇨🇭",
+  "Argentina":"🇦🇷","Bahamas":"🇧🇸","Brazil":"🇧🇷","Canada":"🇨🇦","Chile":"🇨🇱","Colombia":"🇨🇴","Cuba":"🇨🇺",
+  "Dominican Republic":"🇩🇴","Jamaica":"🇯🇲","Mexico":"🇲🇽","Nicaragua":"🇳🇮","Panama":"🇵🇦","Puerto Rico":"🇵🇷",
+  "Uruguay":"🇺🇾","United States":"🇺🇸","Venezuela":"🇻🇪",
+  "Australia":"🇦🇺","China":"🇨🇳","Chinese Taipei":"🇹🇼","Guam":"🇬🇺","India":"🇮🇳","Iran":"🇮🇷","Iraq":"🇮🇶",
+  "Japan":"🇯🇵","Jordan":"🇯🇴","Korea":"🇰🇷","Lebanon":"🇱🇧","New Zealand":"🇳🇿","Philippines":"🇵🇭","Qatar":"🇶🇦",
+  "Saudi Arabia":"🇸🇦","Syria":"🇸🇾",
+  "Angola":"🇦🇴","Cameroon":"🇨🇲","Cape Verde":"🇨🇻","Côte d'Ivoire":"🇨🇮","Congo DR":"🇨🇩","Egypt":"🇪🇬",
+  "Guinea":"🇬🇳","Libya":"🇱🇾","Madagascar":"🇲🇬","Mali":"🇲🇱","Nigeria":"🇳🇬","Rwanda":"🇷🇼","Senegal":"🇸🇳",
+  "South Sudan":"🇸🇸","Tunisia":"🇹🇳","Uganda":"🇺🇬"
+};
+function flag(n){return flags[n]||"🏳️";}
+function winnerCode(c){
+  return c && c[0] && c[0]!=="_" ? c[0] : "";
+}
+function marginCode(c){
+  if(!c) return "";
+  return c[0]==="_" ? (c[1]||"") : (c[1]||"");
+}
+function makeCode(w,m){
+  if(w && m) return w+m;
+  if(w) return w;
+  if(m) return "_"+m;
+  return "";
+}
+const RF={Europe:1,Americas:.93,"Asia/Oceania":.68,Africa:.69};
+const SF=1.2;
+
+const fixtureTemplates={
+  "Europe|November 2026":[
+    ["Spain","Montenegro"],["Portugal","Ukraine"],["Greece","Georgia"],
+    ["Spain","Greece"],["Ukraine","Montenegro"],["Georgia","Portugal"],
+    ["Italy","Türkiye"],["Lithuania","Serbia"],["Iceland","Bosnia and Herzegovina"],
+    ["Türkiye","Iceland"],["Serbia","Italy"],["Bosnia and Herzegovina","Lithuania"],
+    ["Poland","Croatia"],["Latvia","Germany"],["Netherlands","Israel"],
+    ["Croatia","Netherlands"],["Germany","Poland"],["Israel","Latvia"],
+    ["Estonia","France"],["Slovenia","Finland"],["Sweden","Hungary"],
+    ["France","Sweden"],["Finland","Estonia"],["Hungary","Slovenia"]
+  ],
+  "Europe|February 2027":[
+    ["Portugal","Spain"],["Greece","Ukraine"],["Montenegro","Georgia"],
+    ["Spain","Montenegro"],["Ukraine","Portugal"],["Georgia","Greece"],
+    ["Türkiye","Italy"],["Serbia","Lithuania"],["Iceland","Bosnia and Herzegovina"],
+    ["Italy","Serbia"],["Lithuania","Bosnia and Herzegovina"],["Türkiye","Iceland"],
+    ["Latvia","Croatia"],["Netherlands","Germany"],["Poland","Israel"],
+    ["Croatia","Poland"],["Germany","Latvia"],["Israel","Netherlands"],
+    ["Slovenia","France"],["Sweden","Finland"],["Estonia","Hungary"],
+    ["France","Estonia"],["Finland","Slovenia"],["Hungary","Sweden"]
+  ],
+  "Americas|November 2026":[
+    ["Brazil","United States"],["Colombia","Dominican Republic"],["Chile","Mexico"],
+    ["Colombia","United States"],["Chile","Dominican Republic"],["Brazil","Mexico"],
+    ["Canada","Puerto Rico"],["Uruguay","Bahamas"],["Argentina","Panama"],
+    ["Canada","Argentina"],["Uruguay","Puerto Rico"],["Bahamas","Panama"]
+  ],
+  "Americas|February 2027":[
+    ["United States","Chile"],["Dominican Republic","Brazil"],["Colombia","Mexico"],
+    ["United States","Brazil"],["Dominican Republic","Colombia"],["Mexico","Chile"],
+    ["Canada","Panama"],["Bahamas","Uruguay"],["Puerto Rico","Argentina"],
+    ["Canada","Uruguay"],["Bahamas","Argentina"],["Puerto Rico","Panama"]
+  ],
+  "Asia/Oceania|November 2026":[
+    ["Iran","Australia"],["Jordan","New Zealand"],["Syria","Philippines"],
+    ["Jordan","Australia"],["Syria","New Zealand"],["Iran","Philippines"],
+    ["Lebanon","Japan"],["Qatar","Korea"],["Saudi Arabia","China"],
+    ["Qatar","Japan"],["Saudi Arabia","Korea"],["Lebanon","China"]
+  ],
+  "Asia/Oceania|February 2027":[
+    ["Australia","Syria"],["New Zealand","Iran"],["Philippines","Jordan"],
+    ["Australia","Iran"],["New Zealand","Jordan"],["Philippines","Syria"],
+    ["Japan","Saudi Arabia"],["Korea","Lebanon"],["China","Qatar"],
+    ["Japan","Lebanon"],["Korea","Qatar"],["China","Saudi Arabia"]
+  ],
+  "Africa|February 2027":[
+    ["Cameroon","Nigeria"],["South Sudan","Guinea"],["Cape Verde","Tunisia"],
+    ["Tunisia","Cameroon"],["Nigeria","South Sudan"],["Guinea","Cape Verde"],
+    ["Cameroon","Guinea"],["South Sudan","Tunisia"],["Cape Verde","Nigeria"],
+    ["Senegal","Egypt"],["Côte d'Ivoire","Mali"],["Congo DR","Angola"],
+    ["Angola","Senegal"],["Egypt","Côte d'Ivoire"],["Mali","Congo DR"],
+    ["Senegal","Mali"],["Côte d'Ivoire","Angola"],["Congo DR","Egypt"]
+  ]
+};
+const regionNames=["Europe","Americas","Asia/Oceania","Africa"];
+const roundNames=["November 2026","February 2027"];
+
+function key(round,region,i){return round+"|"+region+"|"+i}
+function resetRatings(){state.ratings=Object.fromEntries(D.teams.map(x=>[x.name,x.rating]));state.log=[]}
+function resultText(c){
+ if(!c)return "Not set";
+ const w=winnerCode(c), m=marginCode(c);
+ if(w && m){
+   const win=w==="A"?"Home":"Away", margin=m==="A"?"<15":m==="B"?"15–29":"30<";
+   return win+" win · "+margin;
+ }
+ if(w)return (w==="A"?"Home":"Away")+" selected · choose margin";
+ if(m)return "Margin "+(m==="A"?"<15":m==="B"?"15–29":"30<")+" · choose winner";
+ return "Not set";
+}
+
+const marginDiff={A:7,B:22,C:35};
+function isCompleteCode(c){
+ return !!(c&&c.length===2&&["A","B"].includes(c[0])&&["A","B","C"].includes(c[1]));
+}
+function exactScore(k){
+ const s=state.tiebreakScores[k];
+ return s&&Number.isInteger(s.home)&&Number.isInteger(s.away)&&s.home>=0&&s.away>=0?s:null;
+}
+function scoreToCode(homeScore,awayScore){
+ const hs=Number(homeScore), as=Number(awayScore);
+ if(!Number.isInteger(hs)||!Number.isInteger(as)||hs<0||as<0||hs===as)return "";
+ const winner=hs>as?"A":"B", diff=Math.abs(hs-as), margin=diff<15?"A":diff<30?"B":"C";
+ return winner+margin;
+}
+
+function calcGame(h,a,c,ratings){
+ const hw=c[0]==="A", w=hw?h:a, l=hw?a:h;
+ const margin=c[1]==="A"?1:c[1]==="B"?1.05:1.2, af=w===a?1.1:1;
+ const lossPts=10*RF[teamMap[l].region]*SF;
+ const winPts=10*RF[teamMap[w].region]*SF*1.25*(1+0.0001*ratings[l])*af*margin;
+ return {winner:w,loser:l,winnerPts:winPts,loserPts:lossPts,marginCode:c[1],marginDiff:marginDiff[c[1]]||0};
+}
+function simulateResult(h,a,c){
+ const d=calcGame(h,a,c,state.ratings);
+ state.ratings[d.loser]+=d.loserPts; state.ratings[d.winner]+=d.winnerPts;
+ state.log.push(`${h} vs ${a} · ${c} · ${d.winner} +${d.winnerPts.toFixed(2)} / loser +${d.loserPts.toFixed(2)}`);
+ return d;
+}
+function rebuild(stopBeforeRound=null){
+ resetRatings();
+ state.gameMeta={};
+ const limit=stopBeforeRound===null?roundNames.length:Math.max(0,roundNames.indexOf(stopBeforeRound));
+ for(let ri=0;ri<roundNames.length;ri++){
+  const r=roundNames[ri];
+  if(ri>=limit)break;
+  for(const region of regionNames){
+   const fs=fixtureTemplates[region+"|"+r]||[];
+   fs.forEach((g,i)=>{
+    const c=state.results[key(r,region,i)];
+    const done=c && c.length===2 && (c[0]==="A"||c[0]==="B") && ["A","B","C"].includes(c[1]);
+    if(done)state.gameMeta[key(r,region,i)]=simulateResult(g[0],g[1],c);
+   });
+  }
+ }
+}
+function getRatingsBeforeRound(round){rebuild(round);return {...state.ratings};}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+function aiPickCode(h,a,ratings){
+ const home=ratings[h]||teamMap[h].rating, away=ratings[a]||teamMap[a].rating;
+ const pHome=1/(1+Math.pow(10,-((home+38-away)/240)));
+ const homeWins=Math.random()<pHome;
+ const winner=homeWins?h:a, loser=homeWins?a:h;
+ const gap=Math.abs((ratings[winner]||teamMap[winner].rating)-(ratings[loser]||teamMap[loser].rating));
+ const p30=clamp(.07+gap/900,.07,.34), p15=clamp(.25+gap/1600,.25,.42);
+ const r=Math.random(), margin=r<p30?"C":r<p30+p15?"B":"A";
+ return (winner===h?"A":"B")+margin;
+}
+function aiSimulateRound(){
+ const r=document.getElementById("roundSelect").value;
+ if(!roundNames.includes(r))return;
+ let working=getRatingsBeforeRound(r), added=0;
+ for(const reg of regionNames){
+  const fs=fixtureTemplates[reg+"|"+r]||[];
+  fs.forEach((g,i)=>{
+   const k=key(r,reg,i), existing=state.results[k];
+   const complete=existing&&existing.length===2&&["A","B"].includes(existing[0])&&["A","B","C"].includes(existing[1]);
+   const code=complete?existing:aiPickCode(g[0],g[1],working);
+   if(!complete){state.results[k]=code;added++;}
+   const d=calcGame(g[0],g[1],code,working);
+   working[d.loser]+=d.loserPts; working[d.winner]+=d.winnerPts;
+  });
+ }
+ saveState();
+ rebuild(); renderAll();
+ const note=document.getElementById("aiNote");
+ if(note)note.innerHTML=added?`🤖 AI simulated <b>${added}</b> unplayed matches in ${r}. Existing selections were kept.`:`🤖 No unplayed matches were found in ${r}.`;
+}
+function renderRound(){
+ const r=document.getElementById("roundSelect").value;
+ let total=0,set=0,sections=[];
+ for(const reg of regionNames){
+   const fs=fixtureTemplates[reg+"|"+r]||[];
+   total+=fs.length;
+   set+=fs.filter((_,i)=>state.results[key(r,reg,i)]).length;
+   if(!fs.length) continue;
+   sections.push(`<div class="card" style="margin-bottom:16px">
+     <h3 style="margin-top:0">${reg}</h3>
+     ${fs.map((g,i)=>{
+       const k=key(r,reg,i), c=state.results[k]||"";
+       const wc=winnerCode(c), mc=marginCode(c);
+       return `<div class="card match-card" style="margin:10px 0;background:#0d1a2d">
+         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center">
+           <div><b>${flag(g[0])} ${g[0]}</b><div class="small">Home</div></div>
+           <div style="text-align:center;font-weight:800">VS</div>
+           <div style="text-align:right"><b>${flag(g[1])} ${g[1]}</b><div class="small">Away</div></div>
+         </div>
+         <div class="small" style="margin-top:12px">Winner</div>
+         <div class="controls" style="margin-top:6px;align-items:center">
+           <button type="button" class="winnerBtn ${wc==="A"?"active":""}" data-region="${reg}" data-i="${i}" data-w="A">${flag(g[0])} ${g[0]}</button>
+           <button type="button" class="winnerBtn ${wc==="B"?"active":""}" data-region="${reg}" data-i="${i}" data-w="B">${flag(g[1])} ${g[1]}</button>
+           <button type="button" class="ai-game-btn" data-ai-game="1" data-region="${reg}" data-i="${i}">🤖 AI</button>
+           ${wc?`<span class="selected-winner">✓ Selected: ${flag(wc==="A"?g[0]:g[1])} ${wc==="A"?g[0]:g[1]}</span>`:`<span class="selected-winner" style="opacity:.55">No winner selected</span>`}
+         </div>
+         <div class="small" style="margin-top:10px">Margin</div>
+         <div class="controls" style="margin-top:6px">
+           <button type="button" class="marginBtn ${mc==="A"?"active":""}" data-region="${reg}" data-i="${i}" data-m="A">&lt;15</button>
+           <button type="button" class="marginBtn ${mc==="B"?"active":""}" data-region="${reg}" data-i="${i}" data-m="B">15–29</button>
+           <button type="button" class="marginBtn ${mc==="C"?"active":""}" data-region="${reg}" data-i="${i}" data-m="C">30&lt;</button>
+           <span class="badge">${resultText(c)}</span>
+         </div>
+         ${c && c.length===2 && ["A","B"].includes(c[0]) && ["A","B","C"].includes(c[1]) && state.gameMeta[k] ? `<div class="impact">📊 Ranking impact: <strong>${state.gameMeta[k].winner} +${state.gameMeta[k].winnerPts.toFixed(2)}</strong> · ${state.gameMeta[k].loser} +${state.gameMeta[k].loserPts.toFixed(2)}</div>` : ""}
+       </div>`;
+     }).join("")}
+   </div>`);
+ }
+ document.getElementById("matchList").innerHTML=sections.length?sections.join(""):`<div class="card">No fixture list loaded for this round yet.</div>`;
+ document.getElementById("roundSummary").innerHTML=
+   `<div class="card"><div class="small">ROUND</div><div class="stat">${r}</div></div>
+    <div class="card"><div class="small">REGIONS</div><div class="stat">4</div></div>
+    <div class="card"><div class="small">RESULTS SET</div><div class="stat">${set}/${total}</div></div>`;
+}
+
+
+document.addEventListener("change",(ev)=>{
+ const inp=ev.target.closest("input[data-manual-tb]");
+ if(!inp)return;
+ const panel=inp.dataset.panel,mi=Number(inp.dataset.mi),side=inp.dataset.manualTb;
+ state.tiebreakManual[panel] ||= [];
+ state.tiebreakManual[panel][mi] ||= {home:null,away:null,homeScore:null,awayScore:null};
+ state.tiebreakManual[panel][mi][side==='home'?'homeScore':'awayScore']=inp.value===''?null:Number(inp.value);
+ saveState();
+ rebuild();renderAll();
+});
+
+document.addEventListener("click",(ev)=>{
+ const hide=ev.target.closest("[data-hide-tb]");
+ const show=ev.target.closest("[data-show-tb]");
+ if(hide||show){
+   const k=(hide||show).dataset.hideTb || (hide||show).dataset.showTb;
+   if(show)delete state.tiebreakHidden[k]; else state.tiebreakHidden[k]=true;
+   saveState();renderAll();return;
+ }
+});
+
+document.addEventListener("click",(ev)=>{
+ const ai=ev.target.closest("[data-ai-game]");if(!ai)return;ev.preventDefault();ev.stopPropagation();
+ const r=document.getElementById("roundSelect").value,reg=ai.dataset.region,i=Number(ai.dataset.i),fs=fixtureTemplates[reg+"|"+r]||[],game=fs[i];if(!game)return;
+ const k=key(r,reg,i),before=getRatingsBeforeRound(r),code=aiPickCode(game[0],game[1],before);state.results[k]=code;saveState();rebuild();renderAll();
+ const note=document.getElementById("aiNote");if(note)note.innerHTML=`🤖 AI: <b>${flag(code[0]==="A"?game[0]:game[1])} ${code[0]==="A"?game[0]:game[1]}</b> wins vs ${flag(code[0]==="A"?game[1]:game[0])} ${code[0]==="A"?game[1]:game[0]} · margin <b>${code[1]==="A"?"<15":code[1]==="B"?"15–29":"30<"}</b>. Manual selections were preserved.`;
+});
+
+document.addEventListener("click",(ev)=>{
+ const add=ev.target.closest("[data-add-tb]");
+ if(!add)return;
+ const panel=add.dataset.addTb;
+ state.tiebreakManual[panel] ||= [];
+ const existing=state.tiebreakManual[panel];
+ if(existing.length){const last=existing[existing.length-1];existing.push({home:last.away,away:last.home,homeScore:null,awayScore:null});}
+ else existing.push({home:"",away:"",homeScore:null,awayScore:null});
+ renderAll();
+});
+
+document.addEventListener("change",(ev)=>{
+ const inp=ev.target.closest("input[data-tb-score]");
+ if(!inp)return;
+ const k=inp.dataset.k;
+ const row=inp.closest(".tiebreak-row");
+ const hInput=row?.querySelector('input[data-tb-score="home"]');
+ const aInput=row?.querySelector('input[data-tb-score="away"]');
+ if(!hInput||!aInput)return;
+ const hs=hInput.value===""?null:Number(hInput.value), as=aInput.value===""?null:Number(aInput.value);
+ if(hs===null||as===null)return;
+ if(!Number.isInteger(hs)||!Number.isInteger(as)||hs<0||as<0||hs===as){
+   inp.setCustomValidity("Enter two different non-negative whole numbers.");
+   inp.reportValidity();
+   return;
+ }
+ inp.setCustomValidity("");
+ state.tiebreakScores[k]={home:hs,away:as};
+ saveState();
+ const parts=k.split("|"), r=parts[0], reg=parts[1], i=Number(parts[2]);
+ const fs=fixtureTemplates[reg+"|"+r]||[], game=fs[i];
+ if(game){
+   const code=scoreToCode(hs,as);
+   if(code)state.results[k]=code;
+ }
+ rebuild();
+ renderAll();
+});
+
+document.addEventListener("click",(ev)=>{
+ const b=ev.target.closest(".winnerBtn,.marginBtn");
+ if(!b) return;
+ ev.preventDefault();
+ ev.stopPropagation();
+ const r=document.getElementById("roundSelect").value;
+ const reg=b.dataset.region;
+ const i=Number(b.dataset.i);
+ const k=key(r,reg,i);
+ const old=state.results[k]||"";
+ if(b.classList.contains("winnerBtn")){
+   state.results[k]=makeCode(b.dataset.w,marginCode(old));
+   saveState();
+ }else{
+   state.results[k]=makeCode(winnerCode(old),b.dataset.m);
+   saveState();
+ }
+ rebuild();
+ renderAll();
+});
+
+function tieAwareSort(rows,h2h,diff,exactDiffByTeam){
+ return rows.sort((a,b)=>{
+  if(b.w!==a.w)return b.w-a.w;
+  const tied=rows.filter(x=>x.w===a.w);
+  if(tied.length>1){
+   const ah=tied.reduce((sum,x)=>sum+(h2h[a.name]?.[x.name]||0),0);
+   const bh=tied.reduce((sum,x)=>sum+(h2h[b.name]?.[x.name]||0),0);
+   if(bh!==ah)return bh-ah;
+   const ad=exactDiffByTeam[a.name];
+   const bd=exactDiffByTeam[b.name];
+   if(ad!==undefined||bd!==undefined){
+    const av=ad===undefined?Number.NEGATIVE_INFINITY:ad;
+    const bv=bd===undefined?Number.NEGATIVE_INFINITY:bd;
+    if(bv!==av)return bv-av;
+   }
+  }
+  const bd=diff[b.name]||0, ad=diff[a.name]||0;
+  if(bd!==ad)return bd-ad;
+  return (b.rating||0)-(a.rating||0);
+ });
+}
+function groupDataFor(g,teams){
+ const base=baseStandings[g]||{};
+ const rows=teams.map(n=>({name:n,w:base[n]?.[0]||0,l:base[n]?.[1]||0,remaining:0,rating:state.ratings[n]||teamMap[n]?.rating||0}));
+ const baseH=histH2H(g,teams), histD=histPointDiff(g,teams);
+ const h2h={},diff={},exactDiffByTeam={};
+ teams.forEach(n=>{h2h[n]={...(baseH[n]||{})};diff[n]=histD[n]||0});
+ let played=0,total=0;
+ for(const r of roundNames)for(const reg of regionNames)(fixtureTemplates[reg+"|"+r]||[]).forEach((m,i)=>{
+  if(!teams.includes(m[0])||!teams.includes(m[1]))return;
+  total++;
+  const k=key(r,reg,i), c=state.results[k];
+  const done=isCompleteCode(c);
+  const a=rows.find(x=>x.name===m[0]),b=rows.find(x=>x.name===m[1]); if(!a||!b)return;
+  if(done){
+   played++;
+   const win=c[0]==="A"?a:b, lose=c[0]==="A"?b:a;
+   win.w++;lose.l++;
+   h2h[win.name][lose.name]=(h2h[win.name][lose.name]||0)+1;
+
+   const s=exactScore(k);
+   const md=s?Math.abs(s.home-s.away):(marginDiff[c[1]]||0);
+   diff[win.name]=(diff[win.name]||0)+md;
+   diff[lose.name]=(diff[lose.name]||0)-md;
+  }else{a.remaining++;b.remaining++}
+ });
+
+ // Detect equal-win groups whose H2H record is still equal.
+ const clusters={};
+ rows.forEach(x=>{(clusters[x.w] ||= []).push(x);});
+ Object.values(clusters).forEach(cluster=>{
+   if(cluster.length<2)return;
+   const mini=cluster.map(x=>({team:x.name,wins:cluster.reduce((s,y)=>s+(h2h[x.name]?.[y.name]||0),0)}));
+   const max=Math.max(...mini.map(x=>x.wins)), min=Math.min(...mini.map(x=>x.wins));
+   if(max!==min)return;
+   const h2hGames=[];
+   for(const r of roundNames)for(const reg of regionNames)(fixtureTemplates[reg+"|"+r]||[]).forEach((m,i)=>{
+     if(!cluster.some(z=>z.name===m[0])||!cluster.some(z=>z.name===m[1]))return;
+     const k=key(r,reg,i), c=state.results[k];
+     if(isCompleteCode(c))h2hGames.push({m,k});
+   });
+   const allExact=h2hGames.length>0 && h2hGames.every(({k})=>!!exactScore(k));
+   if(allExact){
+     cluster.forEach(x=>{
+       exactDiffByTeam[x.name]=histGames(g).filter(z=>z.h===x.name||z.a===x.name).reduce((sum,z)=>sum+(z.h===x.name?z.hs-z.as:z.as-z.hs),0);
+       h2hGames.forEach(({m,k})=>{if(m[0]!==x.name&&m[1]!==x.name)return;const sc=exactScore(k);exactDiffByTeam[x.name]+=(m[0]===x.name?sc.home-sc.away:sc.away-sc.home)});
+     });
+   }
+ });
+
+ // Apply manually entered exact H2H scores when a tied cluster has no represented current-round H2H fixture.
+ Object.values(clusters).forEach(cluster=>{
+   if(cluster.length<2)return;
+   const mini=cluster.map(x=>cluster.reduce((s,y)=>s+(h2h[x.name]?.[y.name]||0),0));
+   if(Math.max(...mini)!==Math.min(...mini))return;
+   const md=manualTiebreakDiffs(g,cluster);
+   const any=Object.values(md).some(v=>v!==0);
+   if(any)cluster.forEach(x=>exactDiffByTeam[x.name]=md[x.name]);
+ });
+
+ tieAwareSort(rows,h2h,diff,exactDiffByTeam);
+ const direct=g.startsWith("Africa")?2:3;
+ rows.forEach((x,i)=>{
+  const rivals=rows.filter(y=>y!==x).map(y=>y.w+y.remaining).sort((a,b)=>b-a);
+  x.guaranteed=officiallyQualified.includes(x.name)||x.w>(rivals[direct-1]??-1);
+  x.top3=i<direct;x.gp=x.w+x.l;x.pts=x.w*2+x.l;x.diff=diff[x.name]||0;x.h2h=h2h[x.name]||{};
+ });
+ return {rows,played,total,diff,h2h,direct,exactDiffByTeam};
+}
+
+function tbPanelKey(g,cluster){return g+'::'+cluster.map(x=>x.name).sort().join('|');}
+function defaultManualGames(cluster){
+ const out=[];
+ for(let i=0;i<cluster.length;i++)for(let j=i+1;j<cluster.length;j++)out.push({home:cluster[i].name,away:cluster[j].name,homeScore:null,awayScore:null});
+ return out;
+}
+function manualTiebreakDiffs(g,cluster){
+ const key=tbPanelKey(g,cluster), list=state.tiebreakManual[key]||[];
+ const diff={}; cluster.forEach(x=>diff[x.name]=0);
+ list.forEach(x=>{
+  const hs=Number(x.homeScore),as=Number(x.awayScore);
+  if(!x.home||!x.away||!Number.isInteger(hs)||!Number.isInteger(as)||hs<0||as<0||hs===as)return;
+  diff[x.home]=(diff[x.home]||0)+hs-as;
+  diff[x.away]=(diff[x.away]||0)+as-hs;
+ });
+ return diff;
+}
+function tiebreakCanAffectQualification(g,cluster,d){
+ const region=g.split(" ")[0];
+ const direct=g.startsWith("Africa")?2:3;
+ const qualificationCutoff=(region==="Americas"||region==="Asia/Oceania")?4:direct;
+ return !cluster.every(x=>{
+   const maxWins=x.w+x.remaining;
+   const ahead=d.rows.filter(y=>y!==x && y.w>maxWins).length;
+   return ahead>=qualificationCutoff;
+ });
+}
+function getTiebreakPanels(g,teams,d){
+ d=(d&&d.h2h)?d:groupDataFor(g,teams);const clusters={};d.rows.forEach(x=>{(clusters[x.w] ||= []).push(x)});const panels=[];
+ for(const cluster of Object.values(clusters)){
+  if(cluster.length<2)continue;const vals=cluster.map(x=>cluster.reduce((sum,y)=>sum+(d.h2h[x.name]?.[y.name]||0),0));
+  if(Math.max(...vals)!==Math.min(...vals))continue;
+  const tied=new Set(cluster.map(x=>x.name));
+  const panelKey=tbPanelKey(g,cluster);
+  const canAffect=tiebreakCanAffectQualification(g,cluster,d);
+  const hidden=!!state.tiebreakHidden[panelKey];
+  const playedHist=histGames(g).filter(x=>tied.has(x.h)&&tied.has(x.a));
+  const future=[];
+  for(const r of roundNames)for(const reg of regionNames)(fixtureTemplates[reg+'|'+r]||[]).forEach((m,i)=>{if(!tied.has(m[0])||!tied.has(m[1]))return;const k=key(r,reg,i),c=state.results[k];if(isCompleteCode(c))future.push({k,r,h:m[0],a:m[1],score:exactScore(k)})});
+  if(hidden){
+   panels.push(`<div class="tiebreak-hidden"><div><b>⚖️ Tiebreaker hidden</b><div class="small">${cluster.map(x=>x.name).join(' · ')} · not relevant to the current qualification places.</div></div><button type="button" class="tiebreak-hide-btn" data-show-tb="${panelKey.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">Show</button></div>`);
+   continue;
+  }
+  const histHtml=playedHist.map(x=>`<div class="tiebreak-game-row"><div><b>${flag(x.h)} ${x.h}</b> <span class="small">vs</span> <b>${flag(x.a)} ${x.a}</b><div class="small">Played • locked historical score</div></div><div class="played-score">${x.hs}–${x.as}</div><span class="winner-pill">✓ ${flag(x.hs>x.as?x.h:x.a)} ${x.hs>x.as?x.h:x.a}</span></div>`).join('');
+  const futureHtml=future.map(x=>x.score?`<div class="tiebreak-game-row"><div><b>${flag(x.h)} ${x.h}</b> <span class="small">vs</span> <b>${flag(x.a)} ${x.a}</b><div class="small">${x.r} • simulated</div></div><div class="played-score">${x.score.home}–${x.score.away}</div><span class="winner-pill">✓ ${flag(x.score.home>x.score.away?x.h:x.a)} ${x.score.home>x.score.away?x.h:x.a}</span></div>`:`<div class="tiebreak-game-row"><div><b>${flag(x.h)} ${x.h}</b> <span class="small">vs</span> <b>${flag(x.a)} ${x.a}</b><div class="small">${x.r} • simulated — exact score only for point-difference tiebreak</div></div><div style="display:flex;align-items:center;gap:4px"><input type="number" min="0" step="1" inputmode="numeric" placeholder="Pts" data-tb-score="home" data-k="${x.k}"><span>–</span><input type="number" min="0" step="1" inputmode="numeric" placeholder="Pts" data-tb-score="away" data-k="${x.k}"></div><span class="tiebreak-score-badge">Score needed</span></div>`).join('');
+  const hideButton=canAffect?'':`<button type="button" class="tiebreak-hide-btn" data-hide-tb="${panelKey.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">Hide · no qualification impact</button>`;
+  panels.push(`<div class="tiebreak-panel"><div class="tiebreak-head"><div><b>⚖️ Tiebreaker required</b><div class="tiebreak-help">H2H wins are level for <strong>${cluster.map(x=>x.name).join(' · ')}</strong>. Already played games are loaded automatically.</div></div><div style="display:flex;align-items:center;gap:7px"><span class="tiebreak-ready">H2H DATA</span>${hideButton}</div></div>${playedHist.length?`<div class="tiebreak-help" style="margin:10px 0 4px"><b>Played H2H — locked</b></div>${histHtml}`:''}${future.length?`<div class="tiebreak-help" style="margin:10px 0 4px"><b>Future/simulated H2H</b></div>${futureHtml}`:''}<div class="persist-note">💾 Your selections and tiebreak scores are saved automatically.</div><div class="tiebreak-help" style="margin-top:8px">Order: H2H wins → exact point difference → overall point difference → rating.</div></div>`);
+ }
+ return panels.join('');
+}
+function getAllGroupData(){
+ const regionOrder=["Europe","Americas","Asia/Oceania","Africa"],out=[];
+ for(const region of regionOrder){
+  for(const [g,teams] of Object.entries(D.groups).filter(([x])=>x.startsWith(region+" "))){
+   const d=groupDataFor(g,teams);out.push({region,group:g,rows:d.rows,played:d.played,total:d.total,direct:d.direct});
+  }
+ }
+ return out;
+}
+function qualificationTeams(){
+ const groups=getAllGroupData(), q=[], contender=[];
+ for(const g of groups){
+  g.rows.forEach((x,i)=>{
+   if(x.guaranteed) q.push({...x,group:g.group,region:g.region,official:officiallyQualified.includes(x.name)});
+   else if(x.top3) contender.push({...x,group:g.group,region:g.region});
+  });
+ }
+ return {groups,q,contender};
+}
+function renderDashboard(){
+ const box=document.getElementById("dashboard"); if(!box)return;
+ const all=qualificationTeams();
+ const totalResults=Object.values(state.results).filter(c=>c&&c.length===2).length;
+ const completed=Object.values(state.results).filter(c=>c&&c.length===2&&["A","B"].includes(c[0])&&["A","B","C"].includes(c[1])).length;
+ const ranking=[...D.teams].sort((a,b)=>(state.ratings[b.name]||b.rating)-(state.ratings[a.name]||a.rating));
+ const baseRanking=[...D.teams].sort((a,b)=>b.rating-a.rating);
+ const basePos=Object.fromEntries(baseRanking.map((x,i)=>[x.name,i+1]));
+ const movement=ranking.slice(0,8).map((x,i)=>{const move=basePos[x.name]-(i+1);const cls=move>0?'movement-up':move<0?'movement-down':'movement-flat';const arrow=move>0?'↑':move<0?'↓':'→';return `<div class="mini-row"><span>#${i+1}</span><b>${flag(x.name)} ${x.name}</b><span>${(state.ratings[x.name]||x.rating).toFixed(1)}</span><span class="${cls}">${arrow} ${Math.abs(move)}</span></div>`}).join('');
+ const qlist=all.q.slice().sort((a,b)=>b.w-a.w).map(x=>`<div class="status-row"><b>${flag(x.name)} ${x.name}</b><span>${x.w}-${x.l}</span><span class="qualified-badge">QUALIFIED${x.official?' · OFFICIAL':''}</span></div>`).join('') || '<div class="small">No guaranteed teams yet.</div>';
+ const tlist=all.contender.slice().sort((a,b)=>b.w-a.w).map(x=>`<div class="status-row"><b>${flag(x.name)} ${x.name}</b><span>${x.w}-${x.l}</span><span class="top-badge">TOP 3</span></div>`).join('');
+ const scenarioRows=all.groups.flatMap(g=>g.rows.filter(x=>!x.guaranteed && x.top3).map(x=>{const cutoff=g.rows[g.direct-1]?.w??0;const need=Math.max(0,cutoff+1-x.w);return {x,g,need,cutoff}})).slice(0,10);
+ const scenarios=scenarioRows.map(({x,g,need})=>`<div class="scenario-item"><b>${flag(x.name)} ${x.name}</b><div class="small">${g.group} · ${x.w}-${x.l} · ${x.remaining} remaining · roughly ${need} more win${need===1?'':'s'} to move above the current qualification win line.</div></div>`).join('')||'<div class="small">No unsettled qualification scenarios right now.</div>';
+ box.innerHTML=`<div class="hero"><div><div class="eyebrow">FIBA WORLD CUP 2027</div><h2>Qualification Command Center</h2><p>Enter results, watch standings, and recalculate ranking points live.</p></div><div class="hero-ball">🏀</div></div>
+ <div class="grid"><div class="card"><div class="small">SIMULATED GAMES</div><div class="stat">${completed}</div></div><div class="card"><div class="small">RESULTS ENTERED</div><div class="stat">${totalResults}</div></div><div class="card"><div class="small">QUALIFIED</div><div class="stat">${all.q.length+1}</div><div class="small">including Qatar host</div></div><div class="card"><div class="small">TEAMS IN TOP POSITIONS</div><div class="stat">${all.contender.length}</div></div></div>
+ <div class="dashboard-grid">
+  <div class="card"><div class="section-head"><div><h3>🟢 Qualification Tracker</h3><div class="small">Officially qualified or mathematically guaranteed teams are marked qualified.</div></div><button class="jump" data-jump="groups">Open groups</button></div>${qlist}</div>
+  <div class="card"><div class="section-head"><div><h3>🔵 Current Qualification Positions</h3><div class="small">Currently inside a qualifying position, not necessarily safe.</div></div></div>${tlist||'<div class="small">No current top-position teams beyond guaranteed places.</div>'}</div>
+  <div class="card"><div class="section-head"><div><h3>📈 Ranking Movement</h3><div class="small">Top simulated ranking after entered results.</div></div><button class="jump" data-jump="rank">Full ranking</button></div>${movement}</div>
+  <div class="card"><div class="section-head"><div><h3>🔎 Qualification Scenarios</h3><div class="small">Teams currently near a qualification line.</div></div><button class="jump" data-jump="groups">Open groups</button></div><div class="scenario-list">${scenarios}</div></div>
+  <div class="card"><div class="section-head"><div><h3>🧭 What to do next</h3></div></div><div class="small">1. Enter results in Match Simulator → 2. standings update → 3. qualification status updates → 4. ranking points recalculate.</div><div class="dashboard-links"><button class="jump" data-jump="sim">Simulate matches</button><button class="jump" data-jump="wc">View World Cup 32</button><button class="jump" data-jump="pots">View Pots & Draw</button></div></div>
+ </div>`;
+ box.querySelectorAll('.jump').forEach(b=>b.onclick=()=>document.querySelector(`.tab[data-v="${b.dataset.jump}"]`)?.click());
+}
+function regionalQualificationView(region,groups,quota){
+ const all=groups.filter(g=>g.region===region).flatMap(g=>g.rows.map(x=>({...x,group:g.group,region:g.region})));
+ const primary=all.filter(x=>{const g=groups.find(y=>y.group===x.group);return g.rows.findIndex(y=>y.name===x.name)<g.direct});
+ const wildcards=all.filter(x=>{const g=groups.find(y=>y.group===x.group);return g.rows.findIndex(y=>y.name===x.name)===g.direct});
+ const qualifying=[...primary];
+ if(quota>qualifying.length){wildcards.sort((a,b)=>(b.w+b.remaining)-(a.w+a.remaining)||b.w-a.w||b.rating-a.rating);qualifying.push(...wildcards.slice(0,quota-qualifying.length));}
+ const cutoff=qualifying.length?Math.min(...qualifying.map(x=>x.w)):0;
+ const qNames=new Set(qualifying.map(x=>x.name));
+ all.forEach(x=>{x.currentQualified=qNames.has(x.name)||officiallyQualified.includes(x.name);x.canStill=x.currentQualified||(x.w+x.remaining>=cutoff);x.eliminated=!x.currentQualified&&!x.canStill;});
+ return {all,cutoff};
+}
+function renderWorldCup(){
+ const box=document.getElementById('worldCup');if(!box)return;
+ const groups=qualificationTeams().groups;
+ const quotas={Europe:12,Americas:7,'Asia/Oceania':7,Africa:5};
+ const views={};Object.keys(quotas).forEach(r=>views[r]=regionalQualificationView(r,groups,quotas[r]));
+ const qualified=[{name:'Qatar',region:'Asia/Oceania',status:'HOST'}];
+ groups.flatMap(g=>g.rows.map(x=>({...x,region:g.region}))).forEach(x=>{if(x.currentQualified||officiallyQualified.includes(x.name))qualified.push({name:x.name,region:x.region,status:officiallyQualified.includes(x.name)?'OFFICIAL':'QUALIFIED'});});
+ const unique=[];qualified.forEach(x=>{if(!unique.find(y=>y.name===x.name))unique.push(x)});
+ let cards='';
+ for(const r of Object.keys(quotas)){
+  const arr=unique.filter(x=>x.region===r);
+  cards+=`<div class="card"><div class="section-head"><h3>${r==='Europe'?'🇪🇺':r==='Americas'?'🌎':r==='Asia/Oceania'?'🌏':'🌍'} ${r}</h3><span class="badge">${arr.length}/${quotas[r]}</span></div>`;
+  cards+=arr.map(x=>`<div class="wc-team"><b>${flag(x.name)} ${x.name}</b><span class="qualified-badge">${x.status}</span></div>`).join('')||'<div class="small">No qualified teams yet.</div>';
+  cards+='</div>';
+ }
+ const remaining=Math.max(0,32-unique.length);
+ const contenders=Object.values(views).flatMap(v=>v.all.filter(x=>x.canStill&&!x.currentQualified));
+ const eliminated=Object.values(views).flatMap(v=>v.all.filter(x=>x.eliminated));
+ const chips=(arr,empty)=>arr.length?arr.map(x=>`<span class="badge">${flag(x.name)} ${x.name} · ${x.w}-${x.l}</span>`).join(''):empty;
+ box.innerHTML=`<div class="groups-header"><h2>🏆 FIBA World Cup 2027 — Qualification Picture</h2><div class="small">Live from the current simulation. Regional allocations: Europe 12 · Americas 7 · Asia/Oceania 7 · Africa 5 · Qatar host.</div></div>
+ <div class="grid"><div class="card"><div class="small">QUALIFIED</div><div class="stat">${unique.length}/32</div></div><div class="card"><div class="small">REMAINING</div><div class="stat">${remaining}</div></div><div class="card"><div class="small">HOST</div><div class="stat">🇶🇦</div><div class="small">Qatar</div></div></div>
+ <div class="wc-grid">${cards}</div>
+ <div class="grid" style="margin-top:16px"><div class="card"><div class="section-head"><h3>🟡 In contention</h3><span class="badge">${contenders.length}</span></div><div class="small">Teams that can still reach the current regional qualification line.</div><div class="wc-contenders">${chips(contenders,'<span class="small">No additional teams currently in contention.</span>')}</div></div><div class="card"><div class="section-head"><h3>🔴 Eliminated</h3><span class="badge">${eliminated.length}</span></div><div class="small">Teams whose maximum possible win total is below the current regional line.</div><div class="wc-contenders">${chips(eliminated,'<span class="small">No teams mathematically eliminated yet.</span>')}</div></div></div>`;
+}
+function renderRank(){
+ const f=document.getElementById("rf").value;
+ const arr=D.teams.filter(x=>f==="All"||x.region===f).map(x=>({...x,sim:state.ratings[x.name],d:state.ratings[x.name]-x.rating})).sort((a,b)=>b.sim-a.sim);
+ const baseRanking=[...D.teams].sort((a,b)=>b.rating-a.rating),basePos=Object.fromEntries(baseRanking.map((x,i)=>[x.name,i+1]));
+ document.getElementById("rankbody").innerHTML=arr.map((x,i)=>{const move=basePos[x.name]-(i+1),cls=move>0?'movement-up':move<0?'movement-down':'movement-flat',arrow=move>0?'↑':move<0?'↓':'→';return `<tr><td>${i+1}</td><td><b>${flag(x.name)} ${x.name}</b></td><td><span class="badge">${x.region}</span></td><td>${x.rating.toFixed(1)}</td><td><b>${x.sim.toFixed(1)}</b></td><td class="${x.d>=0?'good':'warn'}">${x.d>=0?'+':''}${x.d.toFixed(1)}</td><td class="${cls}">${arrow} ${Math.abs(move)}</td></tr>`}).join("");
+}
+function renderLog(){document.getElementById("log").innerHTML=state.log.length?state.log.slice().reverse().map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)">${x}</div>`).join(""):"No simulated results."}
+const officiallyQualified=["Türkiye"];
+const baseStandings={
+"Europe I":{"Spain":[5,3],"Ukraine":[6,2],"Montenegro":[4,4],"Portugal":[4,4],"Greece":[4,4],"Georgia":[5,3]},
+"Europe J":{"Türkiye":[8,0],"Serbia":[6,2],"Italy":[5,3],"Lithuania":[4,4],"Bosnia and Herzegovina":[3,5],"Iceland":[3,5]},
+"Europe K":{"Germany":[7,1],"Croatia":[7,1],"Poland":[7,1],"Latvia":[4,4],"Netherlands":[2,6],"Israel":[2,6]},
+"Europe L":{"France":[7,1],"Finland":[5,3],"Slovenia":[4,4],"Sweden":[4,4],"Hungary":[4,4],"Estonia":[3,5]},
+"Americas E":{"United States":[7,1],"Dominican Republic":[6,2],"Brazil":[6,2],"Mexico":[5,3],"Colombia":[3,5],"Chile":[2,6]},
+"Americas F":{"Canada":[8,0],"Uruguay":[6,2],"Argentina":[6,2],"Bahamas":[4,4],"Puerto Rico":[2,6],"Panama":[2,6]},
+"Asia/Oceania E":{"Australia":[8,0],"New Zealand":[6,2],"Iran":[5,3],"Jordan":[5,3],"Philippines":[4,4],"Syria":[2,6]},
+"Asia/Oceania F":{"Japan":[6,2],"Lebanon":[6,2],"China":[5,3],"Korea":[4,4],"Qatar":[4,4],"Saudi Arabia":[3,5]},
+"Africa E":{"Cameroon":[7,2],"South Sudan":[7,2],"Guinea":[6,3],"Tunisia":[5,4],"Nigeria":[5,4],"Cape Verde":[3,6]},
+"Africa F":{"Senegal":[7,2],"Côte d'Ivoire":[7,2],"Angola":[6,3],"Mali":[6,3],"Egypt":[4,5],"Congo DR":[3,6]}
+};
+function renderGroups(){
+ const box=document.getElementById("gg");
+ const regions=[["Europe","🇪🇺 Europe","Top 3 qualify"],["Americas","🌎 Americas","Top 3 + best 4th qualify"],["Asia/Oceania","🌏 Asia / Oceania","Top 3 + best 4th qualify · Qatar is host-qualified"],["Africa","🌍 Africa","Top 2 + best 3rd qualify"]];
+ function groupData(g,teams){
+  const base=baseStandings[g]||{}, rows=teams.map(n=>({name:n,w:base[n]?.[0]||0,l:base[n]?.[1]||0,remaining:0,rating:state.ratings[n]||teamMap[n]?.rating||0}));
+  let played=0,total=0;
+  for(const r of roundNames)for(const reg of regionNames)(fixtureTemplates[reg+"|"+r]||[]).forEach((m,i)=>{
+   if(!teams.includes(m[0])||!teams.includes(m[1]))return; total++;
+   const c=state.results[key(r,reg,i)], done=!!(c&&c.length===2&&["A","B"].includes(c[0])&&["A","B","C"].includes(c[1]));
+   const a=rows.find(x=>x.name===m[0]),b=rows.find(x=>x.name===m[1]); if(!a||!b)return;
+   if(done){played++;c[0]==="A"?(a.w++,b.l++):(b.w++,a.l++)}else{a.remaining++;b.remaining++}
+  });
+  rows.sort((a,b)=>b.w-a.w||a.l-b.l||b.rating-a.rating);
+  const direct=g.startsWith("Africa")?2:3;
+  rows.forEach((x,i)=>{
+   const rivals=rows.filter(y=>y!==x).map(y=>y.w+y.remaining).sort((a,b)=>b-a);
+   x.guaranteed=officiallyQualified.includes(x.name)||x.w>(rivals[direct-1]??-1);
+   x.top3=i<direct;x.gp=x.w+x.l;x.pts=x.w*2+x.l;
+  });
+  return {rows,played,total};
+ }
+ let out="";
+ for(const [region,title,note] of regions){
+  const groups=Object.entries(D.groups).filter(([g])=>g.startsWith(region+" "));
+  if(!groups.length)continue;
+  out+=`<div class="region-block"><div class="region-heading"><div><h2>${title}</h2><div class="small">${note}</div></div></div><div class="groups-grid">`;
+  for(const [g,teams] of groups){
+   const direct=g.startsWith("Africa")?2:3;
+   const d=groupData(g,teams);
+   out+=`<div class="card group-card"><div class="group-title-row"><div><h3>${g}</h3><div class="small">${d.played} played · ${d.total-d.played} remaining</div></div><span class="group-pill">LIVE</span></div>
+   <div class="group-table-wrap"><table class="group-table"><thead><tr><th>#</th><th>Team</th><th>GP</th><th>W</th><th>L</th><th>PTS</th><th>Status</th></tr></thead><tbody>`;
+   d.rows.forEach((x,i)=>{
+    const official=officiallyQualified.includes(x.name);
+    const status=official?`QUALIFIED · ${x.w}-${x.l} · OFFICIAL`:x.guaranteed?`QUALIFIED · ${x.w}-${x.l}`:x.name==="Qatar"?"HOST":x.top3?`TOP ${direct}`:"IN CONTENTION";
+    const statusClass=(official||x.guaranteed)?"qualified-badge":x.name==="Qatar"?"host-badge":x.top3?"top-badge":(x.w+x.remaining<((d.rows[d.direct-1]?.w)||0)?"danger-badge":"badge");
+    out+=`<tr class="${(official||x.guaranteed)?"guaranteed-row":x.top3?"top3-row":""}"><td><span class="rank-number">${i+1}</span></td><td class="team-cell"><b>${flag(x.name)} ${x.name}</b></td><td>${x.gp}</td><td><b>${x.w}</b></td><td>${x.l}</td><td><b>${x.pts}</b></td><td><span class="${statusClass}">${status}</span></td></tr>`;
+   });
+   out+=`</tbody></table></div>${getTiebreakPanels(g,teams,groupDataFor(g,teams))}<div class="group-footer"><span>🔵 Top ${direct} now</span><span>🟢 100% guaranteed</span><span>📊 H2H → exact point difference → margin → rating</span></div></div>`;
+  }
+  out+="</div></div>";
+ }
+ box.innerHTML=out;
+}
+function getProjectedQualifiedTeams(){
+ const groups=qualificationTeams().groups;
+ const quotas={Europe:12,Americas:7,"Asia/Oceania":7,Africa:5};
+ const unique=[];
+ const add=(x)=>{if(x&&!unique.some(y=>y.name===x.name))unique.push(x)};
+ add({name:"Qatar",region:"Asia/Oceania",status:"HOST",rating:state.ratings["Qatar"]||teamMap["Qatar"]?.rating||0,official:true});
+ for(const region of Object.keys(quotas)){
+   const view=regionalQualificationView(region,groups.filter(g=>g.region===region),quotas[region]);
+   view.all.filter(x=>x.currentQualified).forEach(x=>add({name:x.name,region:x.region,status:officiallyQualified.includes(x.name)?"OFFICIAL":"QUALIFIED",rating:state.ratings[x.name]||x.rating||0,official:officiallyQualified.includes(x.name)}));
+ }
+ return unique;
+}
+function shuffleArray(arr){
+ const a=arr.slice();
+ for(let i=a.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+function buildDrawSignature(pots){
+ return pots.map(p=>p.map(x=>x.name).join(",")).join("|");
+}
+function validSavedDraw(groups,qualifiedNames,pots){
+ const flat=groups.flat();
+ if(groups.length!==8||flat.length!==qualifiedNames.length||new Set(flat).size!==flat.length)return false;
+ if(new Set(qualifiedNames).size!==flat.length)return false;
+ const potByTeam={};
+ pots.forEach((p,pi)=>p.forEach(x=>potByTeam[x.name]=pi+1));
+ const seen=new Set();
+ for(const g of groups){
+   if(g.length!==4)return false;
+   const potSeen=new Set();
+   for(const name of g){
+     if(!qualifiedNames.includes(name)||seen.has(name))return false;
+     const pn=potByTeam[name]; if(!pn||potSeen.has(pn))return false;
+     potSeen.add(pn);seen.add(name);
+   }
+ }
+ return seen.size===qualifiedNames.length;
+}
+function generateWorldCupDraw(pots){
+ const shuffled=pots.map(shuffleArray);
+ return Array.from({length:8},(_,i)=>shuffled.map(p=>p[i]?.name||null).filter(Boolean));
+}
+function renderPots(){
+ const box=document.getElementById("worldCupPots");if(!box)return;
+ const qualified=getProjectedQualifiedTeams().sort((a,b)=>(b.rating||0)-(a.rating||0));
+ const pots=Array.from({length:4},(_,i)=>qualified.slice(i*8,i*8+8));
+ const total=qualified.length;
+ const signature=buildDrawSignature(pots);
+ const qualifiedNames=qualified.map(x=>x.name);
+
+ if(!validSavedDraw(state.worldCupDraw,qualifiedNames,pots)||state.worldCupDrawSignature!==signature){
+   state.worldCupDraw=generateWorldCupDraw(pots);
+   state.worldCupDrawSignature=signature;
+   saveState();
+ }
+
+ const status=total>=32?`All 32 teams are seeded and can be drawn.`:`${total}/32 qualified teams currently seeded · ${32-total} slots still open.`;
+ const cards=pots.map((pot,i)=>`<div class="pot-card">
+   <div class="pot-head"><h3>Pot ${i+1}</h3><span class="badge">${pot.length}/8</span></div>
+   ${pot.length?pot.map((x,j)=>`<div class="pot-slot">
+      <span class="pot-rank">${i*8+j+1}</span>
+      <div class="pot-team"><b>${flag(x.name)} ${x.name}</b><div class="small">${x.status||"QUALIFIED"}${x.official?" · OFFICIAL":""}</div></div>
+      <span class="pot-rating">${(x.rating||0).toFixed(1)}</span>
+   </div>`).join(""):`<div class="pot-empty">Waiting for qualified teams…</div>`}
+ </div>`).join('');
+
+ const drawCards=state.worldCupDraw.map((group,i)=>`<div class="draw-card">
+   <div class="draw-card-head"><h3>Group ${String.fromCharCode(65+i)}</h3><span class="badge">${group.length}/4</span></div>
+   ${group.length?group.map((name)=>{
+     const t=qualified.find(x=>x.name===name);
+     const globalRank=qualified.findIndex(x=>x.name===name)+1;
+     const potNo=Math.floor((globalRank-1)/8)+1;
+     return `<div class="draw-slot">
+       <div class="draw-team"><b>${flag(name)} ${name}</b><span class="small">Pot ${potNo} · Rank #${globalRank}</span></div>
+       <span class="draw-pot-badge">${t?(t.rating||0).toFixed(1):"—"}</span>
+     </div>`;
+   }).join(""):`<div class="draw-empty">Waiting for qualified teams…</div>`}
+ </div>`).join('');
+
+ box.innerHTML=`<div class="pots-header">
+   <h2>🪣 FIBA World Cup 2027 — Pots & Projected Draw</h2>
+   <div class="small">4 pots · 8 teams per pot · ranking-based seeding from the currently qualified teams.</div>
+ </div>
+ <div class="pots-note"><b>How it works:</b> the 32 qualified teams are sorted from highest to lowest current simulated FIBA ranking. #1–8 → Pot 1, #9–16 → Pot 2, #17–24 → Pot 3, #25–32 → Pot 4. The draw below places <b>one team from each pot into each of 8 groups</b>. It is a projected simulation, not a claim about official draw restrictions.</div>
+ <div class="grid">
+   <div class="card"><div class="small">QUALIFIED SEEDED</div><div class="stat">${total}/32</div></div>
+   <div class="card"><div class="small">POTS FILLED</div><div class="stat">${pots.filter(x=>x.length===8).length}/4</div></div>
+   <div class="card"><div class="small">GROUPS READY</div><div class="stat">${state.worldCupDraw.filter(x=>x.length===4).length}/8</div></div>
+   <div class="card"><div class="small">STATUS</div><div class="stat">${total>=32?"READY":"IN PROGRESS"}</div><div class="small">${status}</div></div>
+ </div>
+ <div class="pots-grid">${cards}</div>
+ <div class="draw-controls">
+   <div class="left"><h2 style="margin:10px 0 0">🎲 Simulate World Cup Draw</h2><span class="small">One team from each pot per group.</span></div>
+   <button id="redrawWorldCup" type="button">🎲 Redraw Groups</button>
+ </div>
+ <div class="draw-grid">${drawCards}</div>
+ <div class="pot-legend"><span class="pot-chip">🏀 Ranking-based seeding</span><span class="pot-chip">🔄 Updates live with simulation</span><span class="pot-chip">🎲 One team from each pot</span><span class="pot-chip">🇶🇦 Qatar host included</span></div>`;
+
+ const redraw=document.getElementById("redrawWorldCup");
+ if(redraw)redraw.onclick=()=>{
+   state.worldCupDraw=generateWorldCupDraw(pots);
+   state.worldCupDrawSignature=signature;
+   saveState();
+   renderPots();
+ };
+}
+function renderTeams(){const f=document.getElementById("tf").value;document.getElementById("tg").innerHTML=D.teams.filter(x=>f==="All"||x.region===f).sort((a,b)=>b.rating-a.rating).map(x=>`<div class="card"><b>${flag(x.name)} ${x.name}</b><div class="small">${x.region}</div><div style="font-size:22px;font-weight:750;margin-top:7px">${state.ratings[x.name].toFixed(1)}</div></div>`).join("")}
+function renderAll(){renderDashboard();renderRank();renderRound();renderLog();renderGroups();renderWorldCup();renderPots();renderTeams()}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.getElementById(b.dataset.v).classList.add("active")}));
+document.getElementById("roundSelect").innerHTML=roundNames.map(x=>`<option>${x}</option>`).join("");
+document.getElementById("roundSelect").value="November 2026";
+loadState();
+document.getElementById("roundSelect").addEventListener("change",()=>{document.getElementById("aiNote").textContent='🤖 AI Quick Simulate uses current simulated ratings, a home-court adjustment and a randomized margin model. It fills only unplayed games.';renderAll()});
+document.getElementById("rf").addEventListener("change",renderRank);
+document.getElementById("tf").addEventListener("change",renderTeams);
+document.getElementById("clearRound").addEventListener("click",()=>{const r=document.getElementById("roundSelect").value;for(const reg of regionNames){(fixtureTemplates[reg+"|"+r]||[]).forEach((_,i)=>{const k=key(r,reg,i);delete state.results[k];delete state.tiebreakScores[k];});}saveState();rebuild();renderAll()});
+document.getElementById("aiSim").addEventListener("click",aiSimulateRound);
+document.getElementById("reset").addEventListener("click",()=>{state.results={};state.gameMeta={};state.tiebreakScores={};state.tiebreakManual={};try{localStorage.removeItem(STORAGE_KEY)}catch(e){};rebuild();renderAll()});
+renderAll();
+document.addEventListener("DOMContentLoaded",()=>{renderAll();});
+</script></body></html>
